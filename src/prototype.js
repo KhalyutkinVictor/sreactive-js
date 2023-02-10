@@ -99,6 +99,7 @@ class Computed extends Reactive {
   refreshCache() {
     this.cache = this._fn();
     this.isCacheValid = true;
+    this.pushDeps();
   }
   
   get() {

@@ -38,7 +38,7 @@ class TodoInput {
   
   static click() {
     let currentState = todoState.get();
-    currentState.todos = [...(currentState.todos ?? []), {name: self.inpt.value, checked: false}];
+    currentState.todos = [...(currentState.todos ?? []), {name: self.inpt.value, checked: false, id: Math.floor(Math.random() * 100000000)}];
     self.inpt.value = null;
     todoState.set(currentState);
   }
@@ -54,7 +54,7 @@ class TodoContainer {
     const container = document.createElement('div');
     
     for (let todo of this.todos) {
-      container.append((new Todo(todo.name, todo.isChecked)).render());
+      container.append((new Todo(todo.name, todo.isChecked, todo.id)).render());
     }
     
     return container;
@@ -64,9 +64,10 @@ class TodoContainer {
 
 class Todo {
   
-  constructor(name, isChecked) {
+  constructor(name, isChecked, id) {
     this.name = name;
     this.isChecked = isChecked;
+    this.id = id;
   }
   
   render() {
@@ -75,9 +76,16 @@ class Todo {
         <div style="display: flex; gap: 1rem">
             <input type="checkbox" ${this.isChecked ? 'checked' : ''}>
             <span>${this.name}</span>
+            <button class="todo-dlt" onclick="Todo.remove(${this.id})">X</button>
         </div>
     `;
     return container;
+  }
+  
+  static remove(id) {
+    const state = todoState.get();
+    state.todos = state.todos.filter(todo => todo.id !== id);
+    todoState.set(state);
   }
   
 }
@@ -85,3 +93,11 @@ class Todo {
 let app = new TodoApp();
 
 document.getElementById('app').append(app.render());
+
+let vc = new Computed(function() {
+  return todoState.get().todos.length + 1;
+});
+
+new Computed(() => {
+  document.getElementById('counter').innerHTML = vc.get();
+});
