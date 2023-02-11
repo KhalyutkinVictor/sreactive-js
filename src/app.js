@@ -15,7 +15,7 @@ class TodoApp {
       const newTodo = (new TodoContainer(todoState.get().todos)).render();
       todosContainer.replaceWith(newTodo);
       todosContainer = newTodo;
-    }));
+    }, false));
     
     this.el = container;
     return this.el;
@@ -98,6 +98,14 @@ let vc = new Computed(function() {
   return todoState.get().todos.length + 1;
 });
 
-new Computed(() => {
-  document.getElementById('counter').innerHTML = vc.get();
+let bt = new Computed(function () {
+  return vc.get() + 1;
 });
+
+new Computed(() => {
+  document.getElementById('counter').innerHTML = bt.get();
+}, false);
+
+let tasksCount = new Computed(() => todoState.get().todos.length);
+
+document.getElementById('cnt-btn').onclick = () => alert(tasksCount.get());

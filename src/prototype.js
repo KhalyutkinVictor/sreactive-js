@@ -3,6 +3,7 @@ window.VRuntime = {
   
   observableMode: false,
   obsList: [],
+  pullStack: [],
   
   enterObservableMode() {
     if (!this.observableMode) {
@@ -20,13 +21,27 @@ window.VRuntime = {
     this.enterObservableMode();
     let result = fn();
     for (let obs of this.obsList) {
-      obs.addDep(comp);
+      obs.addSub(comp);
+      comp.addPub(obs);
       obs.exitObsMode();
     }
     this.exitObservableMode();
     return result;
-  }
+  },
   
+  pushDepsInStack() {
+    for (let comp of this.pullStack) {
+      comp.calcActualVal();
+    }
+  },
+  
+  stackPush(comp) {
+    this.pullStack.push(comp);
+  },
+  
+  atomChanged() {
+    this.pullStack = [];
+  }
 };
 
 class ObsGetter {
@@ -51,15 +66,26 @@ class ObsGetter {
 
 class Reactive extends ObsGetter {
   
-  deps = [];
+  pubs = [];
+  subs = [];
   
-  addDep(dep) {
-    this.deps.push(dep);
+  addSub(reactive) {
+    this.subs.push(reactive);
+  }
+  
+  addPub(reactive) {
+    this.pubs.push(reactive);
   }
   
   pushDeps() {
-    for (let dep of this.deps) {
-      dep.refreshCache();
+    for (let sub of this.subs) {
+      sub.reactivePush();
+    }
+  }
+  
+  pullDeps() {
+    for (let sub of this.subs) {
+      sub.reactivePull();
     }
   }
   
@@ -74,7 +100,8 @@ class Atom extends Reactive {
   
   set(val) {
     this.val = val;
-    this.pushDeps();
+    window.VRuntime.atomChanged();
+    this.pullDeps();
   }
   
   get() {
@@ -89,24 +116,39 @@ class Computed extends Reactive {
   isCacheValid = false;
   cache = undefined;
   
-  constructor(fn) {
+  constructor(fn, lazy = true) {
     super();
+    this.lazy = lazy;
     this._fn = fn;
     this.cache = window.VRuntime.runComputed(this, fn);
     this.isCacheValid = true;
   }
   
-  refreshCache() {
+  calcActualVal() {
     this.cache = this._fn();
     this.isCacheValid = true;
+    return this.cache;
+  }
+  
+  reactivePush() {
+    this.calcActualVal();
     this.pushDeps();
+  }
+  
+  reactivePull() {
+    this.isCacheValid = false;
+    window.VRuntime.stackPush(this);
+    if (!this.lazy) {
+      window.VRuntime.pushDepsInStack();
+    }
+    this.pullDeps();
   }
   
   get() {
     super.get();
     return this.isCacheValid
       ? this.cache
-      : this.refreshCache();
+      : this.calcActualVal();
   }
   
 }
