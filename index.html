@@ -7,10 +7,21 @@
     <title>Vite + TS</title>
   </head>
   <body>
-    <button id="cnt-btn">Get count</button>
-    <div id="counter"></div>
-    <div id="app"></div>
-    <script src="/src/prototype.js"></script>
-    <script src="/src/app.js"></script>
+    <div style="display: flex">
+      <div style="flex-grow: 1;">
+        <button id="cnt-btn">Get count</button>
+        <div id="counter"></div>
+        <div id="app"></div>
+        <script src="/src/prototype.js"></script>
+        <script src="/src/app.js"></script>
+      </div>
+      <div style="flex-grow: 1">
+        <button id="cnt-btn2">Get count</button>
+        <div id="counter2"></div>
+        <div id="app2"></div>
+        <script type="module" src="/src/app2.js"></script>
+        <script type="module" src="/src/prototype2.js"></script>
+      </div>
+    </div>
   </body>
 </html>
