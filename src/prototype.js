@@ -70,11 +70,15 @@ class Reactive extends ObsGetter {
   subs = [];
   
   addSub(reactive) {
-    this.subs.push(reactive);
+    if (!this.subs.includes(reactive)) {
+      this.subs.push(reactive);
+    }
   }
   
   addPub(reactive) {
-    this.pubs.push(reactive);
+    if (!this.pubs.includes(reactive)) {
+      this.pubs.push(reactive);
+    }
   }
   
   pushDeps() {
