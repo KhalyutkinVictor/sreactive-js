@@ -78,18 +78,30 @@ class __VR_Computed extends __VR_Reactive {
   _val = undefined;
   isCacheValid = false;
   
+  _isRegistered = false;
+  
   constructor(fn, lazy = true) {
     super();
     this.lazy = lazy;
     this._fn = fn;
-    this.runtime.registerComputed(this);
+    if (!this.lazy) {
+      this.register();
+    }
   }
 
   get() {
+    if (!this._isRegistered) {
+      this.register();
+    }
     super.get();
     return this.isCacheValid
       ? this._val
       : this.calcActualValue();
+  }
+  
+  register() {
+    this.runtime.registerComputed(this);
+    this._isRegistered = true;
   }
   
   calcActualValue() {
