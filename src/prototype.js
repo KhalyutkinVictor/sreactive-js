@@ -110,6 +110,7 @@ class Atom extends Reactive {
   
   get() {
     super.get();
+    this._obsMode = false;
     return this.val;
   }
   
@@ -150,9 +151,11 @@ class Computed extends Reactive {
   
   get() {
     super.get();
-    return this.isCacheValid
+    let val = this.isCacheValid
       ? this.cache
       : this.calcActualVal();
+    this._obsMode = false;
+    return val;
   }
   
 }

@@ -11,7 +11,7 @@ class __VR_ObsGetter {
     this._obsMode = false;
   }
   
-  get() {
+  get(fn) {
     if (this.runtime.observableMode) {
       if (this._obsMode) {
         throw new Error('Circular dependencies');
@@ -19,6 +19,9 @@ class __VR_ObsGetter {
       this.runtime.addDep(this);
       this._obsMode = true;
     }
+    let val = fn();
+    this._obsMode = false;
+    return val;
   }
   
 }
@@ -63,8 +66,7 @@ class __VR_Atom extends __VR_Reactive {
   }
   
   get() {
-    super.get();
-    return this._val;
+    return super.get(() => this._val);
   }
 
 }
@@ -93,10 +95,11 @@ class __VR_Computed extends __VR_Reactive {
     if (!this._isRegistered) {
       this.register();
     }
-    super.get();
-    return this.isCacheValid
-      ? this._val
-      : this.calcActualValue();
+    return super.get(
+      () => this.isCacheValid
+        ? this._val
+        : this.calcActualValue()
+    );
   }
   
   register() {

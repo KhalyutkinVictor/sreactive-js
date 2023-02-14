@@ -117,3 +117,13 @@ new Computed2(() => {
 let tasksCount2 = new Computed2(() => todoState2.get().todos.length);
 
 document.getElementById('cnt-btn2').onclick = () => alert(tasksCount2.get());
+
+const test2 = new Atom2([{a: 123}, {a: 256}]);
+
+const testC2 = new Computed2(() => {
+  let t = test2.get();
+  let gp = test2.get();
+  return t.length + gp.length;
+});
+
+console.log('d');

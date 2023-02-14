@@ -109,3 +109,11 @@ new Computed(() => {
 let tasksCount = new Computed(() => todoState.get().todos.length);
 
 document.getElementById('cnt-btn').onclick = () => alert(tasksCount.get());
+
+const test = new Atom([{a: 123}, {a: 256}]);
+
+const testC = new Computed(() => {
+  let t = test.get();
+  let gp = test.get();
+  return t.length + gp.length;
+});
