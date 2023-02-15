@@ -110,11 +110,13 @@ let bt2 = new Computed2(function () {
   return vc2.get() + 1;
 });
 
-new Computed2(() => {
-  document.getElementById('counter2').innerHTML = bt2.get();
+let aw2 = new Computed2(() => {
+  let v = bt2.get();
+  document.getElementById('counter2').innerHTML = v;
+  return v - 2;
 }, false);
 
-let tasksCount2 = new Computed2(() => todoState2.get().todos.length);
+let tasksCount2 = new Computed2(() => aw2.get());
 
 document.getElementById('cnt-btn2').onclick = () => alert(tasksCount2.get());
 
