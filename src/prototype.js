@@ -33,6 +33,7 @@ window.VRuntime = {
     for (let comp of this.pullStack) {
       comp.calcActualVal();
     }
+    this.pullStack = [];
   },
   
   stackPush(comp) {
