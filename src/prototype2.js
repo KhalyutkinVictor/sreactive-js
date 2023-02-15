@@ -114,12 +114,11 @@ class __VR_Computed extends __VR_Reactive {
   }
   
   pull() {
-    if (!this.lazy) {
-      this.calcActualValue();
-      return;
-    }
     this.isCacheValid = false;
     this.runtime.reactivePull(this);
+    if (!this.lazy) {
+      this.calcActualValue();
+    }
   }
   
   push() {
@@ -173,7 +172,10 @@ class VRuntime {
     if (!this._atomClass) {
       throw new Error('Atom class is not defined');
     }
-    this._atomClass.prototype.runtime = this;
+    if (!this._atomClass.prototype.runtime) {
+      this._atomClass = class extends this._atomClass {};
+      this._atomClass.prototype.runtime = this;
+    }
     return this._atomClass;
   }
 
@@ -181,7 +183,10 @@ class VRuntime {
     if (!this._computedClass) {
       throw new Error('Computed class is not defined');
     }
-    this._computedClass.prototype.runtime = this;
+    if (!this._computedClass.prototype.runtime) {
+      this._computedClass = class extends this._computedClass {};
+      this._computedClass.prototype.runtime = this;
+    }
     return this._computedClass;
   }
   
